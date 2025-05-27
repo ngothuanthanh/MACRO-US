@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Đọc dữ liệu từ Excel
-file_path = "macro_data.xlsx"  # đổi thành đúng tên file bạn upload
+file_path = "macro_us_data_with_comments.xlsx"  # đổi thành đúng tên file bạn upload
 sheet_names = pd.ExcelFile(file_path).sheet_names
 
 st.title("Dashboard Theo Dõi Macro – Việt Nam")
