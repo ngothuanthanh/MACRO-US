@@ -14,14 +14,14 @@ for sheet in sheet_names:
     try:
         df = pd.read_excel(file_path, sheet_name=sheet)
 
-        # Kiểm tra có cột 'Date' và 'Value' hay không
-        if 'Date' in df.columns and 'Value' in df.columns:
-            df = df.sort_values('Date')
+        # Kiểm tra có cột 'date' và 'value' hay không
+        if 'Date' in df.columns and 'value' in df.columns:
+            df = df.sort_values('date')
             st.subheader(f"{sheet}")
             fig, ax = plt.subplots()
-            ax.plot(df['Date'], df['Value'])
-            ax.set_xlabel("Date")
-            ax.set_ylabel("Value")
+            ax.plot(df['date'], df['value'])
+            ax.set_xlabel("date")
+            ax.set_ylabel("value")
             st.pyplot(fig)
     except Exception as e:
         st.warning(f"Không đọc được sheet {sheet}: {e}")
