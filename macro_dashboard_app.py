@@ -1,27 +1,38 @@
-
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# Đọc dữ liệu từ Excel
-file_path = "macro_us_data_cleaned.xlsx"  # đổi thành đúng tên file bạn upload
-sheet_names = pd.ExcelFile(file_path).sheet_names
+# Đường dẫn đến file Excel
+FILE_PATH = "macro_us_data_cleaned.xlsx"  # hoặc đổi thành macro_us_data_cleaned_v2.xlsx nếu bạn dùng bản chuẩn hóa
 
-st.title("Dashboard Theo Dõi Macro – Việt Nam")
+# Đọc danh sách sheet
+@st.cache_data
+def load_sheet_names():
+    xls = pd.ExcelFile(FILE_PATH)
+    return xls.sheet_names
 
-# Lặp qua tất cả sheet
-for sheet in sheet_names:
-    try:
-        df = pd.read_excel(file_path, sheet_name=sheet)
+# Đọc dữ liệu từ một sheet
+@st.cache_data
+def load_data(sheet_name):
+    df = pd.read_excel(FILE_PATH, sheet_name=sheet_name)
+    # Đảm bảo kiểu dữ liệu
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.sort_values('date')
+    return df
 
-        # Kiểm tra có cột 'date' và 'value' hay không
-        if 'Date' in df.columns and 'value' in df.columns:
-            df = df.sort_values('date')
-            st.subheader(f"{sheet}")
-            fig, ax = plt.subplots()
-            ax.plot(df['date'], df['value'])
-            ax.set_xlabel("date")
-            ax.set_ylabel("value")
-            st.pyplot(fig)
-    except Exception as e:
-        st.warning(f"Không đọc được sheet {sheet}: {e}")
+# Giao diện
+st.title("📈 Macro Dashboard – US Assets")
+
+sheet_names = load_sheet_names()
+
+# Chọn mã tài sản (sheet)
+selected_sheet = st.selectbox("Chọn tài sản", sheet_names)
+
+# Load và hiển thị dữ liệu
+data = load_data(selected_sheet)
+
+# Hiển thị bảng dữ liệu
+st.subheader(f"Dữ liệu: {selected_sheet}")
+st.dataframe(data.tail(10), use_container_width=True)
+
+# Vẽ biểu đồ
+st.line_chart(data.set_index('date')['value'])
